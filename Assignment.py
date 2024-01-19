@@ -1,35 +1,32 @@
-import json
 import requests
+import json
 
-response = requests.get(f"https://v6.exchangerate-api.com/v6/cfdfcd38a3755b9aaf265c8a/latest/USD")
+currency_owned = input("Enter the currency which you have: ")
 
-print("Please enter your currency that you would like to convert:")
-starting_currency = str(input())
+if currency_owned.isnumeric():
+    print("Error! Invalid input!")
+    currency_owned = input("Enter the currency which you have: ")
 
-while starting_currency.isnumeric():
-    print("Sorry invalid input")
-    print("Please enter your currency that you would like to convert:")
-    starting_currency = str(input())
+convert_currency = input("Enter the currency you would like to change: ")
 
-
-print("Please enter the currency that you would like to change to:")
-Converted_Currency = str(input())
-
-while Converted_Currency.isnumeric():
-    print("Sorry invalid input")
-    print("Please enter the currency that you would like to change to:")
-    Converted_Currency = str(input())
+while convert_currency.isnumeric():
+    print("Error! Invalid input!")
+    convert_to_currency = input("Enter the currency you would like to change: ")
 
 
-if response.status_code == 200:
-    print("You have sucessfully connected")
-else:
-    print("Your access has been denied, please try again")
+response = requests.get(
+    f'https://cdn.jsdelivr.net/gh/fawazahmed0/currency-api@1/latest/currencies/{currency_owned}/{convert_currency}.min.json'
+)
 
+if response.status_code != 200:
+    print(f"Your access has been denied! [{response.status_code}]")
+    quit()
 
+print(f"You have sucessfully connected! [{response.status_code}]")
+current_rate = response.json()[convert_currency]
 
-print(response.status_code)
+print(f"The current exchange rate you requested is: {current_rate} {currency_owned.upper()} to {convert_currency.upper()}")
 
+amount_to_exchange: int = int(input("Enter the amount that you would like to exchange: "))
 
-
-   
+print(f"The amount of {convert_currency.upper()} you will receive is {amount_to_exchange * current_rate}")
